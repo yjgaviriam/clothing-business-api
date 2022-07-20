@@ -1,0 +1,39 @@
+version: '3.7'
+
+networks:
+  clothing-network:
+    driver: bridge
+
+services:
+  app:
+    container_name: clothing-business-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www/html
+    build: .
+    command: php -S app:8000 -t public
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - clothing-network
+
+  db:
+    container_name: clothing-business-db
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_DATABASE}
+      POSTGRES_PASSWORD: ${DB_USERNAME}
+      POSTGRES_DB: ${DB_PASSWORD}
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - clothing-network
+
+volumes:
+  db:
+    driver: local
